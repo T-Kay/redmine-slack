@@ -3,7 +3,6 @@ require 'httpclient'
 class SlackListener < Redmine::Hook::Listener
 	def controller_issues_new_after_save(context={})
 		issue = context[:issue]
-
 		channel = channel_for_project issue.project
 		url = url_for_project issue.project
 
@@ -127,6 +126,8 @@ class SlackListener < Redmine::Hook::Listener
 	end
 
 	def speak(msg, channel, attachment=nil, url=nil)
+		logger "Send #{msg} #{channel} #{attachment} #{url}"
+
 		url = Setting.plugin_redmine_slack['slack_url'] if not url
 		username = Setting.plugin_redmine_slack['username']
 		icon = Setting.plugin_redmine_slack['icon']
@@ -274,5 +275,9 @@ private
 		# slack usernames may only contain lowercase letters, numbers,
 		# dashes and underscores and must start with a letter or number.
 		text.scan(/@[a-z0-9][a-z0-9_\-]*/).uniq
+	end
+
+	def logger text = ''
+		Rails.logger.info '[Redmine Slack] ' + text
 	end
 end
