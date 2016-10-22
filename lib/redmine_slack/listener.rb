@@ -154,6 +154,7 @@ class SlackListener < Redmine::Hook::Listener
 			client = HTTPClient.new
 			client.ssl_config.cert_store.set_default_paths
 			client.ssl_config.ssl_version = :auto
+			client.proxy = ENV["FIXIE_URL"]
 			client.post_async url, {:payload => params.to_json}
 		rescue Exception => e
 			logger.warn("cannot connect to #{url}")
